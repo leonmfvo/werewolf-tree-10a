@@ -1,11 +1,30 @@
-// 全分岐ツリーの表示。data/trees/<id>.json を読み、開いた枝だけ描く。
-// ノード：[種類, 局面, 夜番号, 村勝率, 見出し, 公開情報, 狼視点, 最善の子, 子]
-// 子：[確率 | null, ラベル, 子ノード番号, 種類]  種類 c 確率 / w 人外の選択 / v 村の選択 / f 固定
+// 全分岐ツリーの表示。data/trees/<id>/meta.json と、局面を CHUNK 個ずつに分けた c<k>.json を、開いた枝の分だけ読む。
+// 局面：[種類, 局面, 夜番号, 村勝率, 見出し, 公開情報, 狼視点, 最善の子, 子]
+// 子：[確率 | null, ラベル, 子の局面番号, 種類, 子の村勝率]  種類 c 確率 / w 人外の選択 / v 村の選択 / f 固定
 (function () {
   const $ = (s, e = document) => e.querySelector(s);
   const pct = (x) => (x * 100).toFixed(x > 0 && x < 0.001 ? 3 : 1) + '%';
   const id = new URLSearchParams(location.search).get('t');
-  let D = null;
+  const base = `data/trees/${encodeURIComponent(id || '')}`;
+  let M = null;
+  const chunks = new Map();
+
+  function chunk(k) {
+    if (!chunks.has(k)) {
+      chunks.set(k, fetch(`${base}/c${k}.json`).then((r) => {
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      }));
+    }
+    return chunks.get(k);
+  }
+  async function node(i) {
+    const c = await chunk(Math.floor(i / M.chunk));
+    const nd = c.nodes[i % M.chunk];
+    const s = (j) => c.strs[j];
+    return { k: nd[0], ph: nd[1], d: nd[2], v: nd[3], t: s(nd[4]), pub: s(nd[5]), hid: s(nd[6]), best: nd[7],
+             ch: nd[8].map(([p, lab, cid, kind, v]) => ({ p, lab: s(lab), cid, kind, v })) };
+  }
 
   function el(tag, cls, text) {
     const e = document.createElement(tag);
@@ -25,71 +44,72 @@
     return '';
   }
 
-  function renderNode(i, host) {
-    const [k, ph, d, v, t, pub, hid, best, ch] = D.nodes[i];
+  async function renderNode(i, host, depth) {
+    const loading = el('div', 'pub', '読み込み中…');
+    host.append(loading);
+    let n;
+    try { n = await node(i); } catch (e) { loading.textContent = '読み込めませんでした（' + e.message + '）'; return; }
+    loading.remove();
     const box = el('div', 'node');
     const nh = el('div', 'nh');
-    const dl = dayLabel(ph, d);
+    const dl = dayLabel(n.ph, n.d);
     if (dl) nh.append(el('span', 'lbl acc', dl), ' ');
-    nh.append(el('span', 't', D.strs[t]), ' ', vspan(v));
-    if (k === 'w') nh.append(el('span', 'lbl bad', '人外が選ぶ'));
-    if (k === 'e') nh.append(el('span', 'lbl ' + (v >= 0.5 ? 'good' : 'bad'), '終局'));
+    nh.append(el('span', 't', n.t), ' ', vspan(n.v));
+    if (n.k === 'w') nh.append(el('span', 'lbl bad', '人外が選ぶ'));
+    if (n.k === 'e') nh.append(el('span', 'lbl ' + (n.v >= 0.5 ? 'good' : 'bad'), '終局'));
     box.append(nh);
-    if (D.strs[pub]) box.append(el('div', 'pub', D.strs[pub]));
-    if (D.strs[hid]) {
+    if (n.pub) box.append(el('div', 'pub', n.pub));
+    if (n.hid) {
       const det = el('details', 'hid');
-      det.append(el('summary', null, '狼から見た情報'), el('div', null, D.strs[hid]));
+      det.append(el('summary', null, '狼から見た情報'), el('div', null, n.hid));
       box.append(det);
     }
-    if (ch.length) {
+    if (n.ch.length) {
       const ul = el('ul', 'kids');
-      ch.forEach((c, j) => ul.append(renderKid(c, k === 'w' ? (j === best ? 'best' : 'alt') : '', ch.length === 1)));
+      n.ch.forEach((c, j) => ul.append(renderKid(c, n.k === 'w' ? (j === n.best ? 'best' : 'alt') : '', n.ch.length === 1, depth)));
       box.append(ul);
     }
     host.append(box);
   }
 
-  function renderKid(c, mark, only) {
-    const [p, lab, cid] = c;
+  function renderKid(c, mark, only, depth) {
     const li = el('li', 'kid' + (mark === 'alt' ? ' alt' : ''));
     const row = el('div', 'row');
     const tg = el('span', 'tg', '▸');
-    row.append(tg);
-    row.append(el('span', 'p', p == null ? '' : pct(p)));
-    const l = el('span', 'lab', D.strs[lab]);
+    row.append(tg, el('span', 'p', c.p == null ? '' : pct(c.p)));
+    const l = el('span', 'lab', c.lab);
     if (mark === 'best') l.append(el('span', 'lbl bad', '人外の最善'));
-    row.append(l, vspan(D.nodes[cid][3]));
+    row.append(l, vspan(c.v));
     li.append(row);
-    let open = false, body = null;
+    let body = null;
     const toggle = () => {
-      open = !open;
-      tg.textContent = open ? '▾' : '▸';
-      if (open) { body = el('div'); renderNode(cid, body); li.append(body); }
-      else if (body) { body.remove(); body = null; }
+      if (body) { body.remove(); body = null; tg.textContent = '▸'; return; }
+      tg.textContent = '▾';
+      body = el('div'); li.append(body);
+      renderNode(c.cid, body, depth + 1);
     };
     row.addEventListener('click', toggle);
-    // 1本道と人外の最善はあらかじめ開いておく（深くなりすぎないよう、表示中の深さで制限）
-    if ((only || mark === 'best') && depth < 6) { depth++; toggle(); depth--; }
+    // 1本道と人外の最善はあらかじめ開いておく（深くなりすぎないよう制限）
+    if ((only || mark === 'best') && depth < 6) toggle();
     return li;
   }
-  let depth = 0;
 
   async function main() {
     const host = $('#tree');
     if (!id) { host.textContent = 'ツリーが指定されていません。'; return; }
     try {
-      const r = await fetch(`data/trees/${encodeURIComponent(id)}.json`);
+      const r = await fetch(`${base}/meta.json`);
       if (!r.ok) throw new Error(r.status);
-      D = await r.json();
+      M = await r.json();
     } catch (e) { host.textContent = 'ツリーを読み込めませんでした（' + e.message + '）。'; return; }
-    const m = D.meta;
+    const m = M.meta;
     document.title = `${m.board} ${m.label}｜10a狩人ツリー`;
     $('#ttl').textContent = `${m.board}（${m.label}）の全分岐ツリー`;
-    $('#meta').innerHTML = '';
-    $('#meta').append('進行：', el('b', null, m.policy), '　村勝率：', vspan(m.v), `　局面数：${D.nodes.length.toLocaleString()}`);
-    renderNode(D.root, host);
+    $('#meta').textContent = '';
+    $('#meta').append('進行：', el('b', null, m.policy), '　村勝率：', vspan(m.v), `　局面数：${M.n.toLocaleString()}`);
+    renderNode(M.root, host, 0);
     $('#alt').addEventListener('change', (e) => host.classList.toggle('hideAlt', e.target.checked));
-    $('#collapse').addEventListener('click', () => { host.innerHTML = ''; renderNode(D.root, host); });
+    $('#collapse').addEventListener('click', () => { host.innerHTML = ''; renderNode(M.root, host, 0); });
   }
   main();
 })();
