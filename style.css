@@ -66,3 +66,4 @@ table.sum th{white-space:nowrap}table.sum td:nth-child(3){min-width:14em}
 .syms{font-size:13px;min-width:16em}.sy{white-space:nowrap;margin-left:.35em;color:var(--muted)}.base{font-weight:600}.symrow{border-bottom:1px solid var(--border);font-size:14px;padding-top:8px;padding-bottom:8px}
 .frac{font-weight:600;font-family:var(--mono)}
 table.sum td.n .muted{display:block}
+details.symd{display:inline}details.symd>summary{display:inline;cursor:pointer;color:var(--muted);list-style:none}details.symd>summary::-webkit-details-marker{display:none}details.symd>summary::after{content:" ▸";font-size:11px}details.symd[open]>summary::after{content:" ▾"}details.symd[open]>summary{display:block}

@@ -107,17 +107,21 @@
     $('#ttl').textContent = `${m.board}（${m.label}）の全分岐ツリー`;
     $('#meta').textContent = '';
     $('#meta').append('進行：', el('b', null, m.policy), '　村勝率：');
-    if (m.frac) $('#meta').append(el('b', null, `${m.frac[0]}${m.frac[1] !== 1 ? '/' + m.frac[1] : ''}`), '（', vspan(m.v), '）');
+    if (m.frac) $('#meta').append(vspan(m.v), `（${m.frac[0]}${m.frac[1] !== 1 ? '/' + m.frac[1] : ''}）`);
     else $('#meta').append(vspan(m.v));
     $('#meta').append(`　局面数：${M.n.toLocaleString()}`);
     if (m.sym && m.sym.length) {
       const sy = el('div', 'pub');
-      sy.append('表記：', el('b', null, m.frac ? `${m.frac[0]}${m.frac[1] !== 1 ? '/' + m.frac[1] : ''}（${pct(m.v)}）` : pct(m.v)));
+      sy.append('表記：', el('b', null, m.frac ? `${pct(m.v)}（${m.frac[0]}${m.frac[1] !== 1 ? '/' + m.frac[1] : ''}）` : pct(m.v)));
+      const det = el('details', 'symd'), tot = {};
+      for (const [t, , , p] of m.sym) tot[t] = (tot[t] || 0) + p;
+      det.append(el('summary', null, ['D', 'A'].filter((t) => t in tot).map((t) => `+ ${tot[t].toFixed(2)}·${t}`).join(' ')));
       for (const [t, g, n, p] of m.sym) {
         const x = el('span', 'sy', `+ ${p.toFixed(2)}·${t}`);
         x.append(el('sub', null, `${g}:${n}`));
-        sy.append(' ', x);
+        det.append(' ', x);
       }
+      sy.append(' ', det);
       $('#meta').append(sy);
     }
     renderNode(M.root, host, 0);
