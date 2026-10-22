@@ -88,3 +88,18 @@ details.symd{display:inline}details.symd>summary{display:inline;cursor:pointer;c
   #tree .kid>.row .v{margin-left:auto}
   #tree .kid>.row .lab{order:3;flex-basis:100%;padding-left:1.2em}
 }
+/* 第2版：計算機・均衡・流れ */
+.calcin{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.calcin fieldset{border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin:0;display:flex;flex-wrap:wrap;gap:6px 14px}
+.calcin legend{font-weight:600;font-size:14px;padding:0 4px}
+.calcin label{font-size:14px;white-space:nowrap}
+.calcin input{width:5em;font:inherit;font-size:14px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--fg)}
+.sched{font-size:13px;color:var(--muted);margin-top:2px}
+.eq{background:var(--hl);border-radius:6px;padding:6px 10px}
+.fr2{display:block;font-size:11px;color:var(--muted);font-family:var(--mono)}
+table.sum{table-layout:auto}
+table.sum td:nth-child(3){min-width:0}
+table.sum td.n,table.eqt td.n{white-space:nowrap}
+.formula{border:1px solid var(--border);border-radius:6px;padding:8px 16px;margin-bottom:16px;background:var(--subtle)}
+@media (max-width:600px){table.sum th,table.sum td,table.eqt th,table.eqt td,#c_out th,#c_out td{padding:4px 5px;font-size:13px}table.sum td:nth-child(-n+2),table.sum th{white-space:normal}}
+table.sum td:last-child{white-space:nowrap}

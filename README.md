@@ -5,4 +5,5 @@ CO盤面ごと・内訳ごとに村の進行の村勝率を厳密に計算し、
 
 - `index.html`：盤面ごとの結果
 - `tree.html?t=<id>`：全分岐ツリー（`data/trees/<id>/meta.json` と、2万局面ずつに分けた `c<k>.json` を開いた枝の分だけ読み込む）
-- `data/summary.json`：全進行の村勝率
+- `data/calc.json`：計算機用のデータ（盤面ごとの進行の候補と内訳ごとの村勝率）
+- `data/summary.json`：均衡と内訳ごとの最善進行
