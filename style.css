@@ -67,3 +67,24 @@ table.sum th{white-space:nowrap}table.sum td:nth-child(3){min-width:14em}
 .frac{font-weight:600;font-family:var(--mono)}
 table.sum td.n .muted{display:block}
 details.symd{display:inline}details.symd>summary{display:inline;cursor:pointer;color:var(--muted);list-style:none}details.symd>summary::-webkit-details-marker{display:none}details.symd>summary::after{content:" ▸";font-size:11px}details.symd[open]>summary::after{content:" ▾"}details.symd[open]>summary{display:block}
+/* ツリー：昼・夜・朝・投票の背景色、村勝率は青・出現率は白（文字色） */
+:root{--bg-n:#e8ecf8;--bg-m:#eef3f8;--bg-d:#fff6dd;--bg-v:#f7eafc;--bg-e:#eef7ee;--day-n:#3d4f8a;--day-m:#4a6a86;--day-d:#8a6400;--day-v:#7a3a99;--day-e:#2f6f3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg-n:#141a30;--bg-m:#15202b;--bg-d:#2a2310;--bg-v:#24152f;--bg-e:#122016;--day-n:#9fb2ff;--day-m:#8fb6d8;--day-d:#f0c050;--day-v:#d49cf0;--day-e:#7fd08a}}
+:root[data-theme="dark"]{--bg-n:#141a30;--bg-m:#15202b;--bg-d:#2a2310;--bg-v:#24152f;--bg-e:#122016;--day-n:#9fb2ff;--day-m:#8fb6d8;--day-d:#f0c050;--day-v:#d49cf0;--day-e:#7fd08a}
+#tree .node{border-radius:6px;padding:6px 8px 4px;margin:4px 0}
+#tree .node.ph-n{background:var(--bg-n)}#tree .node.ph-m{background:var(--bg-m)}#tree .node.ph-d{background:var(--bg-d)}#tree .node.ph-v{background:var(--bg-v)}#tree .node.ph-e{background:var(--bg-e)}
+#tree .day{display:inline-block;font-size:12px;font-weight:600;padding:0 7px;border-radius:2em;border:1px solid currentColor;white-space:nowrap}
+#tree .day.ph-n{color:var(--day-n)}#tree .day.ph-m{color:var(--day-m)}#tree .day.ph-d{color:var(--day-d)}#tree .day.ph-v{color:var(--day-v)}#tree .day.ph-e{color:var(--day-e)}
+#tree .v,#meta .v{color:var(--accent);font-family:var(--mono);white-space:nowrap}
+#tree .p{color:var(--fg);font-family:var(--mono);white-space:nowrap;min-width:4.2em;text-align:right;flex:none}
+#tree .fr,#meta .fr{font-size:11px;margin-left:2px;opacity:.85}
+#tree .kids{border-left-color:color-mix(in srgb,var(--fg) 20%,transparent)}
+#tree .kid>.row:hover{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+@media (max-width:600px){
+  #tree .node{padding:4px 4px 2px;margin:3px 0}
+  #tree .kids{padding-left:4px;margin-left:0}
+  #tree .kid>.row{flex-wrap:wrap;gap:2px 6px;padding:3px 4px}
+  #tree .kid>.row .p{min-width:0;text-align:left}
+  #tree .kid>.row .v{margin-left:auto}
+  #tree .kid>.row .lab{order:3;flex-basis:100%;padding-left:1.2em}
+}
