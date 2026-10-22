@@ -107,6 +107,16 @@
     $('#ttl').textContent = `${m.board}（${m.label}）の全分岐ツリー`;
     $('#meta').textContent = '';
     $('#meta').append('進行：', el('b', null, m.policy), '　村勝率：', vspan(m.v), `　局面数：${M.n.toLocaleString()}`);
+    if (m.sym && m.sym.length) {
+      const sy = el('div', 'pub');
+      sy.append('表記：', el('b', null, pct(m.v)));
+      for (const [t, g, n, p] of m.sym) {
+        const x = el('span', 'sy', `+ ${p.toFixed(2)}·${t}`);
+        x.append(el('sub', null, `${g}:${n}`));
+        sy.append(' ', x);
+      }
+      $('#meta').append(sy);
+    }
     renderNode(M.root, host, 0);
     $('#alt').addEventListener('change', (e) => host.classList.toggle('hideAlt', e.target.checked));
     $('#collapse').addEventListener('click', () => { host.innerHTML = ''; renderNode(M.root, host, 0); });
