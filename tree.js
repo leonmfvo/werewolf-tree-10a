@@ -71,6 +71,7 @@
     const nh = el('div', 'nh');
     nh.append(el('span', `day ph-${n.cat}`, dayText(n.cat, d)), ' ', el('span', 't', n.t), ' ', vspan(n.v, n.vf));
     if (n.k === 'w') nh.append(el('span', 'lbl bad', '人外が選ぶ'));
+    if (n.k === 'v') nh.append(el('span', 'lbl good', '村が選ぶ'));
     if (n.k === 'e') nh.append(el('span', 'lbl ' + (n.v >= 0.5 ? 'good' : 'bad'), n.v >= 0.5 ? '村勝ち' : '狼勝ち'));
     box.append(nh);
     if (n.pub) box.append(el('div', 'pub', n.pub));
@@ -81,7 +82,7 @@
     }
     if (n.ch.length) {
       const ul = el('ul', 'kids');
-      n.ch.forEach((c, j) => ul.append(renderKid(c, n.k === 'w' ? (j === n.best ? 'best' : 'alt') : '', d)));
+      n.ch.forEach((c, j) => ul.append(renderKid(c, n.k === 'w' || n.k === 'v' ? (j === n.best ? (n.k === 'v' ? 'vbest' : 'best') : 'alt') : '', d)));
       box.append(ul);
     }
     host.append(box);
@@ -94,6 +95,7 @@
     row.append(tg, pspan(c.p, c.pf));
     const l = el('span', 'lab', c.lab);
     if (mark === 'best') l.append(el('span', 'lbl bad', '人外の最善'));
+    if (mark === 'vbest') l.append(el('span', 'lbl good', '村の最善'));
     row.append(l, vspan(c.v, c.vf));
     li.append(row);
     let body = null;
