@@ -103,3 +103,26 @@ table.sum td.n,table.eqt td.n{white-space:nowrap}
 .formula{border:1px solid var(--border);border-radius:6px;padding:8px 16px;margin-bottom:16px;background:var(--subtle)}
 @media (max-width:600px){table.sum th,table.sum td,table.eqt th,table.eqt td,#c_out th,#c_out td{padding:4px 5px;font-size:13px}table.sum td:nth-child(-n+2),table.sum th{white-space:normal}}
 table.sum td:last-child{white-space:nowrap}
+/* 作戦ガイド */
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:0 0 16px}
+.sg{font:inherit;font-size:15px;font-weight:600;padding:6px 18px;border:0;background:var(--bg);color:var(--muted);cursor:pointer}
+.sg+.sg{border-left:1px solid var(--border)}
+.sg.on{background:var(--accent);color:#fff}
+.bpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:6px;margin:0 0 16px}
+.bp b{white-space:nowrap}
+.bp{font:inherit;font-size:14px;text-align:left;display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer}
+.bp span{color:var(--muted);font-family:var(--mono);font-size:13px}
+.bp:hover{border-color:var(--muted)}
+.bp.on{border-color:var(--accent);background:var(--hl)}
+.big{font-size:1.1em}
+.sm{font-size:13px}
+h4{font-size:1em;font-weight:600;margin:18px 0 6px}
+ol.steps li{margin:0 0 4px}
+table.gt td{font-size:14px}
+details.wk{border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin:0 0 10px}
+details.wk>summary{cursor:pointer}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+b.good{color:var(--good)}b.muted{color:var(--muted)}
+td.nw{white-space:nowrap}
+tr.dim td{color:var(--muted)}
+details.more{margin:0 0 16px}details.more>summary{cursor:pointer;color:var(--muted);font-size:13px;margin:0 0 8px}
